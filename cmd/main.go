@@ -32,7 +32,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	server := grpc.NewServer()
+	server := grpc.NewServer(withUnaryServerInterceptor())
 	todo := service.NewTodoService(conn.Database("todo-db"))
 	api.RegisterTodoServiceServer(server, todo)
 

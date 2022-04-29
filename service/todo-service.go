@@ -20,7 +20,7 @@ func NewTodoService(db *mongo.Database) api.TodoServiceServer {
 }
 
 // GetTodos implements api.TodoServiceServer
-func (t *todoService) GetTodos(context.Context, *api.EmptyRequest) (*api.TodoResponse, error) {
+func (t *todoService) GetTodos(ctx context.Context, _ *api.EmptyRequest) (*api.TodoResponse, error) {
 	todos := []*api.Todo{}
 
 	cur, err := t.db.Collection("todos").Find(context.TODO(), bson.D{})
