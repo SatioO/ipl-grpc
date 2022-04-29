@@ -10,12 +10,14 @@ import (
 
 type todoService struct {
 	pb.UnimplementedTodoServiceServer
-	db *mongo.Database
+	db         *mongo.Database
+	collection string
 }
 
-func NewTodoService(db *mongo.Database) pb.TodoServiceServer {
+func NewTodoService(db *mongo.Database, collection string) pb.TodoServiceServer {
 	return &todoService{
-		db: db,
+		db:         db,
+		collection: collection,
 	}
 }
 
@@ -23,7 +25,7 @@ func NewTodoService(db *mongo.Database) pb.TodoServiceServer {
 func (t *todoService) GetTodos(context.Context, *pb.EmptyRequest) (*pb.TodoResponse, error) {
 	todos := []*pb.Todo{}
 
-	cur, err := t.db.Collection("todos").Find(context.TODO(), bson.D{})
+	cur, err := t.db.Collection(t.collection).Find(context.TODO(), bson.D{})
 
 	if err != nil {
 		return nil, err
@@ -52,7 +54,7 @@ func (t *todoService) GetTodos(context.Context, *pb.EmptyRequest) (*pb.TodoRespo
 
 // CreateTodo implements pb.TodoServiceServer
 func (t *todoService) CreateTodo(ctx context.Context, todo *pb.Todo) (*pb.CreateTodoResponse, error) {
-	_, err := t.db.Collection("todos").InsertOne(context.TODO(), todo)
+	_, err := t.db.Collection(t.collection).InsertOne(context.TODO(), todo)
 
 	if err != nil {
 		return nil, err

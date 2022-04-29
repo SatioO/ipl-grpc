@@ -31,7 +31,7 @@ func main() {
 	}
 
 	server := grpc.NewServer()
-	todo := service.NewTodoService(conn.Database(os.Getenv("DB_NAME")))
+	todo := service.NewTodoService(conn.Database(os.Getenv("DB_NAME")), "todos")
 	pb.RegisterTodoServiceServer(server, todo)
 
 	if err := server.Serve(ls); err != nil {
