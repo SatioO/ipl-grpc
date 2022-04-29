@@ -1,0 +1,16 @@
+syntax="proto3";
+
+package api;
+
+option go_package=".;api";
+
+message EmptyRequest {}
+message TodoResponse {
+    int32 id = 1;
+    string title = 2;
+    int32 status = 3;
+}
+
+service TodoService {
+    rpc GetTodos(EmptyRequest) returns (TodoResponse);
+}
