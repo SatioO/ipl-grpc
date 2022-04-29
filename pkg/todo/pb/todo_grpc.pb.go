@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.19.4
-// source: proto/todo.proto
+// source: pkg/todo/proto/todo.proto
 
-package api
+package pb
 
 import (
 	context "context"
@@ -36,7 +36,7 @@ func NewTodoServiceClient(cc grpc.ClientConnInterface) TodoServiceClient {
 
 func (c *todoServiceClient) GetTodos(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*TodoResponse, error) {
 	out := new(TodoResponse)
-	err := c.cc.Invoke(ctx, "/api.TodoService/GetTodos", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/pb.TodoService/GetTodos", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func (c *todoServiceClient) GetTodos(ctx context.Context, in *EmptyRequest, opts
 
 func (c *todoServiceClient) CreateTodo(ctx context.Context, in *Todo, opts ...grpc.CallOption) (*CreateTodoResponse, error) {
 	out := new(CreateTodoResponse)
-	err := c.cc.Invoke(ctx, "/api.TodoService/CreateTodo", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/pb.TodoService/CreateTodo", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +94,7 @@ func _TodoService_GetTodos_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.TodoService/GetTodos",
+		FullMethod: "/pb.TodoService/GetTodos",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TodoServiceServer).GetTodos(ctx, req.(*EmptyRequest))
@@ -112,7 +112,7 @@ func _TodoService_CreateTodo_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.TodoService/CreateTodo",
+		FullMethod: "/pb.TodoService/CreateTodo",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TodoServiceServer).CreateTodo(ctx, req.(*Todo))
@@ -124,7 +124,7 @@ func _TodoService_CreateTodo_Handler(srv interface{}, ctx context.Context, dec f
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var TodoService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "api.TodoService",
+	ServiceName: "pb.TodoService",
 	HandlerType: (*TodoServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -137,5 +137,5 @@ var TodoService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/todo.proto",
+	Metadata: "pkg/todo/proto/todo.proto",
 }

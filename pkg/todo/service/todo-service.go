@@ -3,25 +3,25 @@ package service
 import (
 	"context"
 
-	"github.com/satioO/todo-grpc/api"
+	"github.com/satioO/todo-grpc/pkg/todo/pb"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type todoService struct {
-	api.UnimplementedTodoServiceServer
+	pb.UnimplementedTodoServiceServer
 	db *mongo.Database
 }
 
-func NewTodoService(db *mongo.Database) api.TodoServiceServer {
+func NewTodoService(db *mongo.Database) pb.TodoServiceServer {
 	return &todoService{
 		db: db,
 	}
 }
 
-// GetTodos implements api.TodoServiceServer
-func (t *todoService) GetTodos(ctx context.Context, _ *api.EmptyRequest) (*api.TodoResponse, error) {
-	todos := []*api.Todo{}
+// GetTodos implements pb.TodoServiceServer
+func (t *todoService) GetTodos(context.Context, *pb.EmptyRequest) (*pb.TodoResponse, error) {
+	todos := []*pb.Todo{}
 
 	cur, err := t.db.Collection("todos").Find(context.TODO(), bson.D{})
 
@@ -30,7 +30,7 @@ func (t *todoService) GetTodos(ctx context.Context, _ *api.EmptyRequest) (*api.T
 	}
 
 	for cur.Next(context.TODO()) {
-		todo := api.Todo{}
+		todo := pb.Todo{}
 		err := cur.Decode(&todo)
 		if err != nil {
 			return nil, err
@@ -45,20 +45,20 @@ func (t *todoService) GetTodos(ctx context.Context, _ *api.EmptyRequest) (*api.T
 		return nil, mongo.ErrNoDocuments
 	}
 
-	return &api.TodoResponse{
+	return &pb.TodoResponse{
 		Items: todos,
 	}, nil
 }
 
-// CreateTodo implements api.TodoServiceServer
-func (t *todoService) CreateTodo(ctx context.Context, todo *api.Todo) (*api.CreateTodoResponse, error) {
+// CreateTodo implements pb.TodoServiceServer
+func (t *todoService) CreateTodo(ctx context.Context, todo *pb.Todo) (*pb.CreateTodoResponse, error) {
 	_, err := t.db.Collection("todos").InsertOne(context.TODO(), todo)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &api.CreateTodoResponse{
+	return &pb.CreateTodoResponse{
 		Message: "Todo Created :::",
 	}, nil
 }

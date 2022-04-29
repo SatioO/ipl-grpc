@@ -7,14 +7,12 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"github.com/satioO/todo-grpc/api"
-	"github.com/satioO/todo-grpc/service"
+	"github.com/satioO/todo-grpc/pkg/todo/pb"
+	"github.com/satioO/todo-grpc/pkg/todo/service"
 	"google.golang.org/grpc"
 )
 
 func main() {
-	// load .env file from given path
-	// we keep it empty it will load .env from current directory
 	err := godotenv.Load(".env")
 
 	if err != nil {
@@ -32,9 +30,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	server := grpc.NewServer(withUnaryServerInterceptor())
-	todo := service.NewTodoService(conn.Database("todo-db"))
-	api.RegisterTodoServiceServer(server, todo)
+	server := grpc.NewServer()
+	todo := service.NewTodoService(conn.Database(os.Getenv("DB_NAME")))
+	pb.RegisterTodoServiceServer(server, todo)
 
 	if err := server.Serve(ls); err != nil {
 		log.Fatal("Failed to start server")
