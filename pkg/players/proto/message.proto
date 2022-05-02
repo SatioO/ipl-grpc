@@ -1,0 +1,41 @@
+syntax="proto3";
+
+package pb;
+
+option go_package=".;pb";
+
+enum Team {
+    CSK = 0;
+    MI = 1;
+    DC = 2;
+    PBKS = 3;
+    KKR = 4;
+    RR = 5;
+    RCB = 6;
+    SRH = 7;
+    GT = 8;
+    LSG = 9;
+}
+
+enum PlayerType {
+    WicketKeeper = 0;
+    Batsman = 1;
+    AllRounder = 2;
+    Bowler = 3;
+}
+
+message Player {
+    string name = 1;
+    Team team = 2;
+    PlayerType type = 3;
+}
+
+message TeamPlayerRequest {
+    Team first = 1;
+    Team second = 2;
+}
+
+message TeamPlayerResponse {
+    repeated Team first = 1;
+    repeated Team second = 2;
+}

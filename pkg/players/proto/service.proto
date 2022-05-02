@@ -1,0 +1,11 @@
+syntax="proto3";
+
+package pb;
+
+option go_package=".;pb";
+
+import "pkg/players/proto/message.proto";
+
+service PlayerService {
+    rpc GetPlayers(TeamPlayerRequest) returns (TeamPlayerResponse);
+} 
