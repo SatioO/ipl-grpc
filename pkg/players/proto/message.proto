@@ -1,8 +1,8 @@
 syntax="proto3";
 
-package pb;
+package player_pb;
 
-option go_package=".;pb";
+option go_package=".;player_pb";
 
 enum Team {
     CSK = 0;
@@ -30,12 +30,23 @@ message Player {
     PlayerType type = 3;
 }
 
+message ImageInfo {
+    string id = 1;
+    string image_type = 2;
+}
+
 message TeamPlayerRequest {
     Team first = 1;
     Team second = 2;
 }
 
 message TeamPlayerResponse {
-    repeated Team first = 1;
-    repeated Team second = 2;
+    repeated Player first = 1;
+    repeated Player second = 2;
+}
+
+message UploadPlayersRequest {}
+
+message UploadPlayersResponse {
+    bool created = 1;
 }

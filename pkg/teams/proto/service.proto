@@ -1,0 +1,12 @@
+syntax="proto3";
+
+package teams_pb;
+
+option go_package=".;teams_pb";
+
+import "pkg/teams/proto/message.proto";
+
+service TeamService {
+    rpc GetTeams(GetTeamRequest) returns (GetTeamResponse);
+    rpc CreateTeams(CreateTeamsRequest) returns (CreateTeamsResponse);
+}

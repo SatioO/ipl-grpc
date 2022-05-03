@@ -1,11 +1,12 @@
 syntax="proto3";
 
-package pb;
+package player_pb;
 
-option go_package=".;pb";
+option go_package=".;player_pb";
 
 import "pkg/players/proto/message.proto";
 
 service PlayerService {
     rpc GetPlayers(TeamPlayerRequest) returns (TeamPlayerResponse);
+    rpc UploadPlayers(UploadPlayersRequest) returns (UploadPlayersResponse);
 } 

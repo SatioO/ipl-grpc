@@ -7,8 +7,10 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"github.com/satioO/todo-grpc/pkg/todo/pb"
-	"github.com/satioO/todo-grpc/pkg/todo/service"
+	player_pb "github.com/satioO/todo-grpc/pkg/players/pb"
+	players_svc "github.com/satioO/todo-grpc/pkg/players/service"
+	teams_pb "github.com/satioO/todo-grpc/pkg/teams/pb"
+	teams_svc "github.com/satioO/todo-grpc/pkg/teams/service"
 	"google.golang.org/grpc"
 )
 
@@ -31,8 +33,12 @@ func main() {
 	}
 
 	server := grpc.NewServer()
-	todo := service.NewTodoService(conn.Database(os.Getenv("DB_NAME")), "todos")
-	pb.RegisterTodoServiceServer(server, todo)
+
+	player := players_svc.NewPlayerService(conn.Database(os.Getenv("DB_NAME")), "players")
+	player_pb.RegisterPlayerServiceServer(server, player)
+
+	team := teams_svc.NewTeamService(conn.Database(os.Getenv("DB_NAME")), "players")
+	teams_pb.RegisterTeamServiceServer(server, team)
 
 	if err := server.Serve(ls); err != nil {
 		log.Fatal("Failed to start server")

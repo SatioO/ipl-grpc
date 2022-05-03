@@ -1,0 +1,21 @@
+syntax="proto3";
+
+package teams_pb;
+
+option go_package=".;teams_pb";
+
+message Team {
+	string id = 1; 
+	string name = 2; 
+	string abbr = 3;
+	string color = 4; 
+    string logo = 5;
+}
+
+message GetTeamRequest {}
+message GetTeamResponse {}
+
+message CreateTeamsRequest {}
+message CreateTeamsResponse {
+    string message = 1;
+}
