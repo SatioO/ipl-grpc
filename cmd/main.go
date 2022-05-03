@@ -37,7 +37,7 @@ func main() {
 	player := players_svc.NewPlayerService(conn.Database(os.Getenv("DB_NAME")), "players")
 	player_pb.RegisterPlayerServiceServer(server, player)
 
-	team := teams_svc.NewTeamService(conn.Database(os.Getenv("DB_NAME")), "players")
+	team := teams_svc.NewTeamService(conn.Database(os.Getenv("DB_NAME")), "teams")
 	teams_pb.RegisterTeamServiceServer(server, team)
 
 	if err := server.Serve(ls); err != nil {

@@ -13,7 +13,9 @@ message Team {
 }
 
 message GetTeamRequest {}
-message GetTeamResponse {}
+message GetTeamResponse {
+    repeated Team Items = 1;
+}
 
 message CreateTeamsRequest {}
 message CreateTeamsResponse {

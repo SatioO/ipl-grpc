@@ -9,6 +9,7 @@ import (
 	"github.com/satioO/todo-grpc/pkg/teams"
 	"github.com/satioO/todo-grpc/pkg/teams/model"
 	teams_pb "github.com/satioO/todo-grpc/pkg/teams/pb"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -26,7 +27,7 @@ func NewTeamService(db *mongo.Database, collection string) teams_pb.TeamServiceS
 }
 
 // CreateTeams implements teams_pb.TeamServiceServer
-func (t *teamService) CreateTeams(context.Context, *teams_pb.CreateTeamsRequest) (*teams_pb.CreateTeamsResponse, error) {
+func (t *teamService) CreateTeams(ctx context.Context, rq *teams_pb.CreateTeamsRequest) (*teams_pb.CreateTeamsResponse, error) {
 	ch := make(chan *model.Team)
 
 	res, err := http.Get(teams.GET_TEAM_URL)
@@ -58,13 +59,40 @@ func (t *teamService) CreateTeams(context.Context, *teams_pb.CreateTeamsRequest)
 		output = append(output, comm)
 	}
 
-	_, err = t.db.Collection("teams").InsertMany(context.TODO(), output)
+	_, err = t.db.Collection(t.collection).InsertMany(ctx, output)
 	if err != nil {
 		return nil, err
 	}
 
 	return &teams_pb.CreateTeamsResponse{
 		Message: "Inserted: 1",
+	}, nil
+}
+
+// GetTeams implements teams_pb.TeamServiceServer
+func (t *teamService) GetTeams(ctx context.Context, rq *teams_pb.GetTeamRequest) (*teams_pb.GetTeamResponse, error) {
+	teams := []*teams_pb.Team{}
+	cursor, err := t.db.Collection(t.collection).Find(ctx, bson.D{})
+
+	if err != nil {
+		return nil, err
+	}
+
+	for cursor.Next(ctx) {
+		team := model.Team{}
+		cursor.Decode(&team)
+
+		teams = append(teams, &teams_pb.Team{
+			Id:    team.ID,
+			Name:  team.Name,
+			Color: team.Color,
+			Abbr:  team.Abbr,
+			Logo:  team.Logos[0].Href,
+		})
+	}
+
+	return &teams_pb.GetTeamResponse{
+		Items: teams,
 	}, nil
 }
 
@@ -82,9 +110,4 @@ func (t *teamService) FetchTeamDetails(url string) (*model.Team, error) {
 	}
 
 	return team, nil
-}
-
-// GetTeams implements teams_pb.TeamServiceServer
-func (*teamService) GetTeams(context.Context, *teams_pb.GetTeamRequest) (*teams_pb.GetTeamResponse, error) {
-	panic("unimplemented")
 }
