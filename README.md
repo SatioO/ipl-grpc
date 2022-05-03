@@ -1,3 +1,7 @@
-DB_NAME=<dbname>
-DB_CONNECTION_URI=mongodb+srv://<username>:<password>@cluster0.lsktz.mongodb.net/<dbname>?retryWrites=true&w=majority
+# Environment Variables Setup
+
+### Create .env file at the root of project 
+
+DB_NAME=SAMPLE_DB_NAME
+DB_CONNECTION_URI=SAMPLE_CONNECTION_URI
 SERVICE_PORT=3000
