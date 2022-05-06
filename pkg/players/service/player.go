@@ -1,11 +1,16 @@
-package players_svc
+package service
 
 import (
 	"context"
+	"encoding/json"
 	"log"
+	"net/http"
+	"os"
 
+	"github.com/satioO/todo-grpc/pkg/players"
 	player_pb "github.com/satioO/todo-grpc/pkg/players/pb"
-	teams_repo "github.com/satioO/todo-grpc/pkg/teams/repository"
+	shared_model "github.com/satioO/todo-grpc/pkg/shared/model"
+	teams_repo "github.com/satioO/todo-grpc/pkg/teams/repo"
 )
 
 type playerService struct {
@@ -44,7 +49,31 @@ func (p *playerService) CreatePlayers(ctx context.Context, rq *player_pb.UploadP
 		return nil, err
 	}
 
-	log.Println(teams)
+	for _, team := range teams {
+		go func(teamId string) {
+			res, err := GetAthletes(teamId)
+			if err != nil {
+				log.Println("error getting teams", err)
+			}
 
-	return nil, nil
+			log.Println(res)
+		}(team.ID)
+	}
+
+	return &player_pb.UploadPlayersResponse{}, nil
+}
+
+func GetAthletes(teamId string) (*shared_model.Response, error) {
+	res, err := http.Get(players.GET_ATHLETES_URL(os.Getenv("SEASON_ID"), teamId))
+
+	if err != nil {
+		return nil, err
+	}
+
+	var response shared_model.Response
+	if err := json.NewDecoder(res.Body).Decode(&response); err != nil {
+		return nil, err
+	}
+
+	return &response, nil
 }

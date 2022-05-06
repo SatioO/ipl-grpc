@@ -1,15 +1,19 @@
-package teams_svc
+package service
 
 import (
 	context "context"
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/satioO/todo-grpc/pkg/teams"
 	"github.com/satioO/todo-grpc/pkg/teams/model"
+
+	shared_model "github.com/satioO/todo-grpc/pkg/shared/model"
+
 	teams_pb "github.com/satioO/todo-grpc/pkg/teams/pb"
-	teams_repo "github.com/satioO/todo-grpc/pkg/teams/repository"
+	teams_repo "github.com/satioO/todo-grpc/pkg/teams/repo"
 )
 
 type TeamService struct {
@@ -28,13 +32,13 @@ func (t *TeamService) CreateTeams(ctx context.Context, rq *teams_pb.CreateTeamsR
 	ch := make(chan *model.Team)
 	defer close(ch)
 
-	res, err := http.Get(teams.GET_TEAM_URL)
+	res, err := http.Get(teams.GET_TEAM_URL(os.Getenv("SEASON_ID")))
 
 	if err != nil {
 		return nil, err
 	}
 
-	var teams model.TeamsResponse
+	var teams shared_model.Response
 	err = json.NewDecoder(res.Body).Decode(&teams)
 	if err != nil {
 		return nil, err

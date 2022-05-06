@@ -9,7 +9,7 @@ import (
 	"github.com/joho/godotenv"
 
 	teams_pb "github.com/satioO/todo-grpc/pkg/teams/pb"
-	teams_repo "github.com/satioO/todo-grpc/pkg/teams/repository"
+	teams_repo "github.com/satioO/todo-grpc/pkg/teams/repo"
 	teams_svc "github.com/satioO/todo-grpc/pkg/teams/service"
 
 	player_pb "github.com/satioO/todo-grpc/pkg/players/pb"

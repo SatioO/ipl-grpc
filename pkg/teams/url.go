@@ -1,5 +1,5 @@
 package teams
 
-const (
-	GET_TEAM_URL = "http://core.espnuk.org/v2/sports/cricket/leagues/8048/teams"
-)
+func GET_TEAM_URL(seasonId string) string {
+	return "http://core.espnuk.org/v2/sports/cricket/leagues/" + seasonId + "/teams"
+}

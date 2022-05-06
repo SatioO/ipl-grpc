@@ -1,4 +1,4 @@
-package teams_repo
+package repo
 
 import (
 	"context"
