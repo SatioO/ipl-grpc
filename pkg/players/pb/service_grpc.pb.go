@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PlayerServiceClient interface {
 	GetPlayers(ctx context.Context, in *TeamPlayerRequest, opts ...grpc.CallOption) (*TeamPlayerResponse, error)
-	UploadPlayers(ctx context.Context, in *UploadPlayersRequest, opts ...grpc.CallOption) (*UploadPlayersResponse, error)
+	CreatePlayers(ctx context.Context, in *UploadPlayersRequest, opts ...grpc.CallOption) (*UploadPlayersResponse, error)
 }
 
 type playerServiceClient struct {
@@ -43,9 +43,9 @@ func (c *playerServiceClient) GetPlayers(ctx context.Context, in *TeamPlayerRequ
 	return out, nil
 }
 
-func (c *playerServiceClient) UploadPlayers(ctx context.Context, in *UploadPlayersRequest, opts ...grpc.CallOption) (*UploadPlayersResponse, error) {
+func (c *playerServiceClient) CreatePlayers(ctx context.Context, in *UploadPlayersRequest, opts ...grpc.CallOption) (*UploadPlayersResponse, error) {
 	out := new(UploadPlayersResponse)
-	err := c.cc.Invoke(ctx, "/player_pb.PlayerService/UploadPlayers", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/player_pb.PlayerService/CreatePlayers", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (c *playerServiceClient) UploadPlayers(ctx context.Context, in *UploadPlaye
 // for forward compatibility
 type PlayerServiceServer interface {
 	GetPlayers(context.Context, *TeamPlayerRequest) (*TeamPlayerResponse, error)
-	UploadPlayers(context.Context, *UploadPlayersRequest) (*UploadPlayersResponse, error)
+	CreatePlayers(context.Context, *UploadPlayersRequest) (*UploadPlayersResponse, error)
 	mustEmbedUnimplementedPlayerServiceServer()
 }
 
@@ -68,8 +68,8 @@ type UnimplementedPlayerServiceServer struct {
 func (UnimplementedPlayerServiceServer) GetPlayers(context.Context, *TeamPlayerRequest) (*TeamPlayerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPlayers not implemented")
 }
-func (UnimplementedPlayerServiceServer) UploadPlayers(context.Context, *UploadPlayersRequest) (*UploadPlayersResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UploadPlayers not implemented")
+func (UnimplementedPlayerServiceServer) CreatePlayers(context.Context, *UploadPlayersRequest) (*UploadPlayersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreatePlayers not implemented")
 }
 func (UnimplementedPlayerServiceServer) mustEmbedUnimplementedPlayerServiceServer() {}
 
@@ -102,20 +102,20 @@ func _PlayerService_GetPlayers_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PlayerService_UploadPlayers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PlayerService_CreatePlayers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UploadPlayersRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PlayerServiceServer).UploadPlayers(ctx, in)
+		return srv.(PlayerServiceServer).CreatePlayers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/player_pb.PlayerService/UploadPlayers",
+		FullMethod: "/player_pb.PlayerService/CreatePlayers",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PlayerServiceServer).UploadPlayers(ctx, req.(*UploadPlayersRequest))
+		return srv.(PlayerServiceServer).CreatePlayers(ctx, req.(*UploadPlayersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -132,8 +132,8 @@ var PlayerService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PlayerService_GetPlayers_Handler,
 		},
 		{
-			MethodName: "UploadPlayers",
-			Handler:    _PlayerService_UploadPlayers_Handler,
+			MethodName: "CreatePlayers",
+			Handler:    _PlayerService_CreatePlayers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

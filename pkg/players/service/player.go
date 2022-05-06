@@ -2,24 +2,20 @@ package players_svc
 
 import (
 	"context"
-	"encoding/csv"
 	"log"
-	"os"
 
 	player_pb "github.com/satioO/todo-grpc/pkg/players/pb"
-	"go.mongodb.org/mongo-driver/mongo"
+	teams_repo "github.com/satioO/todo-grpc/pkg/teams/repository"
 )
 
 type playerService struct {
 	player_pb.UnimplementedPlayerServiceServer
-	db         *mongo.Database
-	collection string
+	teams_repo *teams_repo.TeamsRepo
 }
 
-func NewPlayerService(db *mongo.Database, collection string) player_pb.PlayerServiceServer {
+func NewPlayerService(teams_repo *teams_repo.TeamsRepo) player_pb.PlayerServiceServer {
 	return &playerService{
-		db:         db,
-		collection: collection,
+		teams_repo: teams_repo,
 	}
 }
 
@@ -42,18 +38,13 @@ func map_player_type(record []string) player_pb.PlayerType {
 }
 
 // UploadPlayers implements pb.PlayerServiceServer
-func (*playerService) UploadPlayers(ctx context.Context, rq *player_pb.UploadPlayersRequest) (*player_pb.UploadPlayersResponse, error) {
-	f, err := os.Open("./static/IPL_Data.csv")
+func (p *playerService) CreatePlayers(ctx context.Context, rq *player_pb.UploadPlayersRequest) (*player_pb.UploadPlayersResponse, error) {
+	teams, err := p.teams_repo.GetTeams()
 	if err != nil {
-		log.Fatal("Unable to read input file ", err)
+		return nil, err
 	}
-	defer f.Close()
 
-	csvReader := csv.NewReader(f)
+	log.Println(teams)
 
-	_, err = csvReader.ReadAll()
-	if err != nil {
-		log.Fatal("Unable to parse file as CSV for ", err)
-	}
 	return nil, nil
 }

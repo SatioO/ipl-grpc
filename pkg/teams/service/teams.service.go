@@ -9,26 +9,24 @@ import (
 	"github.com/satioO/todo-grpc/pkg/teams"
 	"github.com/satioO/todo-grpc/pkg/teams/model"
 	teams_pb "github.com/satioO/todo-grpc/pkg/teams/pb"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
+	teams_repo "github.com/satioO/todo-grpc/pkg/teams/repository"
 )
 
-type teamService struct {
+type TeamService struct {
 	teams_pb.UnimplementedTeamServiceServer
-	db         *mongo.Database
-	collection string
+	repo *teams_repo.TeamsRepo
 }
 
-func NewTeamService(db *mongo.Database, collection string) teams_pb.TeamServiceServer {
-	return &teamService{
-		db:         db,
-		collection: collection,
+func NewTeamService(repo *teams_repo.TeamsRepo) teams_pb.TeamServiceServer {
+	return &TeamService{
+		repo: repo,
 	}
 }
 
 // CreateTeams implements teams_pb.TeamServiceServer
-func (t *teamService) CreateTeams(ctx context.Context, rq *teams_pb.CreateTeamsRequest) (*teams_pb.CreateTeamsResponse, error) {
+func (t *TeamService) CreateTeams(ctx context.Context, rq *teams_pb.CreateTeamsRequest) (*teams_pb.CreateTeamsResponse, error) {
 	ch := make(chan *model.Team)
+	defer close(ch)
 
 	res, err := http.Get(teams.GET_TEAM_URL)
 
@@ -59,7 +57,8 @@ func (t *teamService) CreateTeams(ctx context.Context, rq *teams_pb.CreateTeamsR
 		output = append(output, comm)
 	}
 
-	_, err = t.db.Collection(t.collection).InsertMany(ctx, output)
+	_, err = t.repo.InsertTeams(output)
+
 	if err != nil {
 		return nil, err
 	}
@@ -70,23 +69,20 @@ func (t *teamService) CreateTeams(ctx context.Context, rq *teams_pb.CreateTeamsR
 }
 
 // GetTeams implements teams_pb.TeamServiceServer
-func (t *teamService) GetTeams(ctx context.Context, rq *teams_pb.GetTeamRequest) (*teams_pb.GetTeamResponse, error) {
+func (t *TeamService) GetTeams(ctx context.Context, rq *teams_pb.GetTeamRequest) (*teams_pb.GetTeamResponse, error) {
 	teams := []*teams_pb.Team{}
-	cursor, err := t.db.Collection(t.collection).Find(ctx, bson.D{})
+	entity, err := t.repo.GetTeams()
 
 	if err != nil {
 		return nil, err
 	}
 
-	for cursor.Next(ctx) {
-		team := model.Team{}
-		cursor.Decode(&team)
-
+	for _, team := range entity {
 		teams = append(teams, &teams_pb.Team{
 			Id:    team.ID,
 			Name:  team.Name,
-			Color: team.Color,
 			Abbr:  team.Abbr,
+			Color: team.Color,
 			Logo:  team.Logos[0].Href,
 		})
 	}
@@ -96,7 +92,7 @@ func (t *teamService) GetTeams(ctx context.Context, rq *teams_pb.GetTeamRequest)
 	}, nil
 }
 
-func (t *teamService) FetchTeamDetails(url string) (*model.Team, error) {
+func (t *TeamService) FetchTeamDetails(url string) (*model.Team, error) {
 	res, err := http.Get(url)
 
 	if err != nil {

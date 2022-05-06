@@ -7,10 +7,13 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+
+	teams_pb "github.com/satioO/todo-grpc/pkg/teams/pb"
+	teams_repo "github.com/satioO/todo-grpc/pkg/teams/repository"
+	teams_svc "github.com/satioO/todo-grpc/pkg/teams/service"
+
 	player_pb "github.com/satioO/todo-grpc/pkg/players/pb"
 	players_svc "github.com/satioO/todo-grpc/pkg/players/service"
-	teams_pb "github.com/satioO/todo-grpc/pkg/teams/pb"
-	teams_svc "github.com/satioO/todo-grpc/pkg/teams/service"
 	"google.golang.org/grpc"
 )
 
@@ -34,11 +37,14 @@ func main() {
 
 	server := grpc.NewServer()
 
-	player := players_svc.NewPlayerService(conn.Database(os.Getenv("DB_NAME")), "players")
-	player_pb.RegisterPlayerServiceServer(server, player)
+	// TEAMS
+	repo_teams := teams_repo.NewTeamsRepo(conn.Database(os.Getenv("DB_NAME")).Collection("teams"))
+	svc_teams := teams_svc.NewTeamService(repo_teams)
+	teams_pb.RegisterTeamServiceServer(server, svc_teams)
 
-	team := teams_svc.NewTeamService(conn.Database(os.Getenv("DB_NAME")), "teams")
-	teams_pb.RegisterTeamServiceServer(server, team)
+	// PLAYERS
+	svc_players := players_svc.NewPlayerService(repo_teams)
+	player_pb.RegisterPlayerServiceServer(server, svc_players)
 
 	if err := server.Serve(ls); err != nil {
 		log.Fatal("Failed to start server")

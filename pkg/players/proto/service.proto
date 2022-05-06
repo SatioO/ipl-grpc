@@ -8,5 +8,5 @@ import "pkg/players/proto/message.proto";
 
 service PlayerService {
     rpc GetPlayers(TeamPlayerRequest) returns (TeamPlayerResponse);
-    rpc UploadPlayers(UploadPlayersRequest) returns (UploadPlayersResponse);
+    rpc CreatePlayers(UploadPlayersRequest) returns (UploadPlayersResponse);
 } 
